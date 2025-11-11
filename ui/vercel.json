@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd packages/nextjs && npm run build",
+  "installCommand": "cd packages/fhevm-sdk && npm install --legacy-peer-deps && npm run build && cd ../nextjs && npm install --legacy-peer-deps",
+  "outputDirectory": "packages/nextjs/.next",
+  "framework": "nextjs"
+}
+
