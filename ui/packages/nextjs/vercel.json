@@ -1,0 +1,4 @@
+{
+  "installCommand": "cd ../fhevm-sdk && npm install --legacy-peer-deps && npm run build && cd ../nextjs && npm install --legacy-peer-deps && node scripts/setup-sdk.js",
+  "buildCommand": "node scripts/setup-sdk.js && npm run build"
+}
