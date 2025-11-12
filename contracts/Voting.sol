@@ -80,7 +80,7 @@ contract Voting is SepoliaConfig {
         Poll storage poll = polls[pollId];
         require(poll.active, "Poll not active");
         require(!poll.hasVoted[msg.sender], "Already voted");
-        require(optionIndex < poll.optionCount, "Invalid option");
+        require(optionIndex < poll.optionCount, "Invalid option index");
 
         euint32 encryptedVote = FHE.fromExternal(inputEuint32, inputProof);
 
