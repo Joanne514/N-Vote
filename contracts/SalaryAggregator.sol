@@ -39,7 +39,7 @@ contract SalaryAggregator is SepoliaConfig {
             FHE.allowThis(_sum);
             _sum = FHE.add(_sum, encSalary);
         }
-        count += 1;
+        count = count + 1;
 
         // Allow contract and sender to access updated handles if needed
         FHE.allowThis(_sum);
