@@ -217,7 +217,7 @@ describe("Voting", function () {
     expect(pollInfo.title).to.eq(title);
     expect(pollInfo.description).to.eq(description);
     expect(pollInfo.active).to.be.true;
-    expect(pollInfo.optionCount).to.eq(3);
+    expect(pollInfo.optionCount).to.eq(2);
     expect(pollInfo.totalVotes).to.eq(0);
 
     const option0 = await votingContract.getOptionDescription(pollId, 0);
