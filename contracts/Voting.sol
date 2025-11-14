@@ -48,7 +48,9 @@ contract Voting is SepoliaConfig {
         string memory description,
         string[] memory options
     ) external returns (uint256 pollId) {
-        require(options.length > 0 && options.length <= 10, "Invalid option count");
+        require(bytes(title).length > 0, "Poll title cannot be empty");
+        require(bytes(description).length > 0, "Poll description cannot be empty");
+        require(options.length >= 2 && options.length <= 10, "Poll must have 2-10 options");
         require(bytes(title).length > 0, "Title required");
 
         pollId = pollCount++;
