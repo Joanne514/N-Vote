@@ -30,7 +30,7 @@ contract Voting is SepoliaConfig {
     uint256 public pollCount;
 
     event PollCreated(uint256 indexed pollId, string title, address creator);
-    event VoteCast(uint256 indexed pollId, address indexed voter);
+    event VoteCast(uint256 indexed pollId, address indexed voter, uint32 optionIndex);
     event PollDecrypted(uint256 indexed pollId);
 
     constructor(address _admin) {
@@ -105,7 +105,7 @@ contract Voting is SepoliaConfig {
         FHE.allowThis(option.encryptedCount);
         FHE.allow(option.encryptedCount, msg.sender);
 
-        emit VoteCast(pollId, msg.sender);
+        emit VoteCast(pollId, msg.sender, optionIndex);
     }
 
     /// @notice Get encrypted vote count for a specific option
