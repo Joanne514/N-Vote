@@ -16,6 +16,9 @@ contract SalaryAggregator is SepoliaConfig {
     // Plain count of submissions (reveals number of participants only)
     uint32 public count;
 
+    // Track who has submitted salary this period
+    mapping(address => bool) private _hasSubmitted;
+
     event SalarySubmitted(address indexed account);
 
     constructor(address hr) {
@@ -29,6 +32,8 @@ contract SalaryAggregator is SepoliaConfig {
     /// @param inputEuint32 Encrypted salary handle
     /// @param inputProof   Input proof
     function submitSalary(externalEuint32 inputEuint32, bytes calldata inputProof) external {
+        require(!_hasSubmitted[msg.sender], "Salary already submitted for this period");
+
         euint32 encSalary = FHE.fromExternal(inputEuint32, inputProof);
 
         // Initialize sum on first submission
@@ -44,6 +49,8 @@ contract SalaryAggregator is SepoliaConfig {
         // Allow contract and sender to access updated handles if needed
         FHE.allowThis(_sum);
         FHE.allow(_sum, msg.sender);
+
+        _hasSubmitted[msg.sender] = true;
 
         emit SalarySubmitted(msg.sender);
     }
