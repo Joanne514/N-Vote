@@ -99,7 +99,9 @@ contract Voting is SepoliaConfig {
         }
 
         poll.hasVoted[msg.sender] = true;
-        poll.totalVotes += 1;
+        unchecked {
+            poll.totalVotes += 1;
+        }
 
         // Allow contract and voter to access updated handles
         FHE.allowThis(option.encryptedCount);
