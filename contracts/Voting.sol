@@ -51,7 +51,11 @@ contract Voting is SepoliaConfig {
         require(bytes(title).length > 0, "Poll title cannot be empty");
         require(bytes(description).length > 0, "Poll description cannot be empty");
         require(options.length >= 2 && options.length <= 10, "Poll must have 2-10 options");
-        require(bytes(title).length > 0, "Title required");
+
+        // Validate each option is non-empty
+        for (uint256 i = 0; i < options.length; i++) {
+            require(bytes(options[i]).length > 0, "All options must be non-empty");
+        }
 
         pollId = pollCount++;
         Poll storage poll = polls[pollId];
