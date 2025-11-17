@@ -46,11 +46,14 @@ contract Voting is SepoliaConfig {
     function createPoll(
         string memory title,
         string memory description,
-        string[] memory options
+        string[] memory options,
+        uint256 endTime
     ) external returns (uint256 pollId) {
         require(bytes(title).length > 0, "Poll title cannot be empty");
         require(bytes(description).length > 0, "Poll description cannot be empty");
         require(options.length >= 2 && options.length <= 10, "Poll must have 2-10 options");
+        require(endTime > block.timestamp, "End time must be in the future");
+        require(endTime <= block.timestamp + 30 days, "Poll cannot last longer than 30 days");
 
         // Validate each option is non-empty
         for (uint256 i = 0; i < options.length; i++) {
@@ -62,6 +65,7 @@ contract Voting is SepoliaConfig {
         poll.title = title;
         poll.description = description;
         poll.active = true;
+        poll.endTime = endTime;
         poll.optionCount = uint32(options.length);
 
         for (uint32 i = 0; i < options.length; i++) {
@@ -85,6 +89,7 @@ contract Voting is SepoliaConfig {
     ) external {
         Poll storage poll = polls[pollId];
         require(poll.active, "Poll not active");
+        require(block.timestamp <= poll.endTime, "Poll has ended");
         require(!poll.hasVoted[msg.sender], "Already voted");
         require(optionIndex < poll.optionCount, "Invalid option index");
 
