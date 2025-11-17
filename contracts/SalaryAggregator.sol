@@ -19,6 +19,9 @@ contract SalaryAggregator is SepoliaConfig {
     // Track who has submitted salary this period
     mapping(address => bool) private _hasSubmitted;
 
+    // Rate limiting: last submission time per user
+    mapping(address => uint256) private _lastSubmissionTime;
+
     event SalarySubmitted(address indexed account);
 
     constructor(address hr) {
@@ -33,6 +36,7 @@ contract SalaryAggregator is SepoliaConfig {
     /// @param inputProof   Input proof
     function submitSalary(externalEuint32 inputEuint32, bytes calldata inputProof) external {
         require(!_hasSubmitted[msg.sender], "Salary already submitted for this period");
+        require(block.timestamp >= _lastSubmissionTime[msg.sender] + 1 hours, "Rate limit: wait 1 hour between submissions");
 
         euint32 encSalary = FHE.fromExternal(inputEuint32, inputProof);
 
@@ -51,6 +55,7 @@ contract SalaryAggregator is SepoliaConfig {
         FHE.allow(_sum, msg.sender);
 
         _hasSubmitted[msg.sender] = true;
+        _lastSubmissionTime[msg.sender] = block.timestamp;
 
         emit SalarySubmitted(msg.sender);
     }
