@@ -49,6 +49,9 @@ contract Voting is SepoliaConfig {
         string[] memory options,
         uint256 endTime
     ) external returns (uint256 pollId) {
+        // Clean up expired polls periodically
+        _cleanupExpiredPolls();
+
         require(bytes(title).length > 0, "Poll title cannot be empty");
         require(bytes(description).length > 0, "Poll description cannot be empty");
         require(options.length >= 2 && options.length <= 10, "Poll must have 2-10 options");
@@ -190,6 +193,17 @@ contract Voting is SepoliaConfig {
     /// @return Whether the address has voted
     function hasVoted(uint256 pollId, address voter) external view returns (bool) {
         return polls[pollId].hasVoted[voter];
+    }
+
+    /// @dev Internal function to clean up expired polls
+    function _cleanupExpiredPolls() internal {
+        uint256 currentTime = block.timestamp;
+        for (uint256 i = 0; i < pollCount; i++) {
+            Poll storage poll = polls[i];
+            if (poll.active && currentTime > poll.endTime) {
+                poll.active = false;
+            }
+        }
     }
 }
 
