@@ -24,6 +24,8 @@ export const VotingApp = () => {
   const [pollDescription, setPollDescription] = useState("");
   const [optionInputs, setOptionInputs] = useState<string[]>(["", ""]);
   const [showCreatePoll, setShowCreatePoll] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   if (!isConnected) {
     return (
@@ -96,7 +98,24 @@ export const VotingApp = () => {
 
   const handleVote = async (optionIndex: number) => {
     if (voting.selectedPollId === undefined) return;
-    await voting.castVote(voting.selectedPollId, optionIndex);
+
+    try {
+      setError(null);
+      await voting.castVote(voting.selectedPollId, optionIndex);
+      setSuccess("Vote cast successfully!");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      console.error("Voting error:", err);
+      const errorMessage = err?.message?.includes("Already voted")
+        ? "You have already voted in this poll"
+        : err?.message?.includes("Poll not active")
+        ? "This poll is no longer active"
+        : err?.message?.includes("Invalid option")
+        ? "Invalid voting option selected"
+        : "Failed to cast vote. Please try again.";
+      setError(errorMessage);
+      setTimeout(() => setError(null), 5000);
+    }
   };
 
   return (
@@ -316,6 +335,25 @@ export const VotingApp = () => {
             </div>
 
             <div className="border-t border-gray-200 pt-6 mt-6">
+              {/* Error/Success Messages */}
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="text-red-500">⚠️</span>
+                    <span className="text-red-800 text-sm">{error}</span>
+                  </div>
+                </div>
+              )}
+
+              {success && (
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <span className="text-green-500">✅</span>
+                    <span className="text-green-800 text-sm">{success}</span>
+                  </div>
+                </div>
+              )}
+
               {/* Voting Section */}
               {voting.userHasVoted ? (
                 <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-6">
