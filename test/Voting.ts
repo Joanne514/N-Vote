@@ -223,6 +223,49 @@ describe("Voting", function () {
     const option0 = await votingContract.getOptionDescription(pollId, 0);
     expect(option0).to.eq("Option A");
   });
+
+  it("should prevent voting on inactive polls", async function () {
+    // Create a poll
+    const pollId = await createPollFixture();
+
+    // Deactivate the poll
+    await votingContract.connect(admin).deactivatePoll(pollId);
+
+    // Try to vote on inactive poll
+    const encryptedVote = await fhevm.createEncryptedNumber(0, votingContractAddress);
+
+    await expect(
+      votingContract.connect(signers.alice).castVote(
+        pollId,
+        0,
+        encryptedVote.handles[0],
+        encryptedVote.inputProof
+      )
+    ).to.be.revertedWith("Poll not active");
+  });
+
+  it("should validate poll creation parameters", async function () {
+    // Empty title should fail
+    await expect(
+      votingContract.connect(signers.alice).createPoll("", "Description", ["Option 1", "Option 2"], Math.floor(Date.now() / 1000) + 3600)
+    ).to.be.revertedWith("Poll title cannot be empty");
+
+    // Empty description should fail
+    await expect(
+      votingContract.connect(signers.alice).createPoll("Title", "", ["Option 1", "Option 2"], Math.floor(Date.now() / 1000) + 3600)
+    ).to.be.revertedWith("Poll description cannot be empty");
+
+    // Too few options should fail
+    await expect(
+      votingContract.connect(signers.alice).createPoll("Title", "Description", ["Option 1"], Math.floor(Date.now() / 1000) + 3600)
+    ).to.be.revertedWith("Poll must have 2-10 options");
+
+    // Too many options should fail
+    const tooManyOptions = Array(12).fill("Option");
+    await expect(
+      votingContract.connect(signers.alice).createPoll("Title", "Description", tooManyOptions, Math.floor(Date.now() / 1000) + 3600)
+    ).to.be.revertedWith("Poll must have 2-10 options");
+  });
 });
 
 
