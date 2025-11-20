@@ -21,6 +21,8 @@ export const SalaryApp = () => {
   const sa = useSalaryAggregatorWagmi({ instance, initialMockChains });
 
   const [salary, setSalary] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   if (!isConnected) {
     return (
@@ -43,9 +45,39 @@ export const SalaryApp = () => {
 
   const onSubmit = async () => {
     const v = Number(salary);
-    if (!Number.isFinite(v) || v <= 0) return;
-    await sa.submitSalary(Math.floor(v));
-    setSalary("");
+
+    // Enhanced validation
+    if (!salary || salary.trim() === "") {
+      setError("Please enter your salary");
+      return;
+    }
+
+    if (!Number.isFinite(v) || v <= 0) {
+      setError("Please enter a valid salary amount greater than 0");
+      return;
+    }
+
+    if (v > 10000000) {
+      setError("Salary amount seems too high. Please verify the value.");
+      return;
+    }
+
+    try {
+      setError(null);
+      await sa.submitSalary(Math.floor(v));
+      setSuccess("Salary submitted successfully!");
+      setSalary("");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      console.error("Salary submission error:", err);
+      const errorMessage = err?.message?.includes("already submitted")
+        ? "You have already submitted your salary for this period"
+        : err?.message?.includes("Rate limit")
+        ? "Please wait before submitting again"
+        : "Failed to submit salary. Please try again.";
+      setError(errorMessage);
+      setTimeout(() => setError(null), 5000);
+    }
   };
 
   return (
@@ -57,6 +89,25 @@ export const SalaryApp = () => {
 
       <div className="bg-white shadow p-6">
         <h3 className="font-bold text-gray-900 text-lg mb-3">Submit Monthly Salary</h3>
+
+        {/* Error/Success Messages */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-red-500">⚠️</span>
+              <span className="text-red-800 text-sm">{error}</span>
+            </div>
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-green-500">✅</span>
+              <span className="text-green-800 text-sm">{success}</span>
+            </div>
+          </div>
+        )}
         <div className="flex gap-3">
           <input
             className="input input-bordered w-full"
