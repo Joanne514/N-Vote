@@ -6,7 +6,7 @@ is computed client-side by HR as sum / count. Individual salaries remain private
 
 ## Live Demo
 
-- Testnet deployment (connect wallet required): [vote1-ib39.vercel.app](https://vote1-ib39.vercel.app/)
+- Testnet deployment (connect wallet required): [vote1-ib39.vercel.app](https://vote-iota-livid.vercel.app/)
 - Screen capture walkthrough: [Watch the demo](https://github.com/Joanne514/N-Vote/blob/main/vote.mp4)
 
 ## 🔒 Security Features

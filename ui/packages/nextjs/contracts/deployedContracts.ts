@@ -349,6 +349,11 @@ const deployedContracts = {
               name: "options",
               type: "string[]",
             },
+            {
+              internalType: "uint256",
+              name: "endTime",
+              type: "uint256",
+            },
           ],
           name: "createPoll",
           outputs: [
@@ -879,6 +884,11 @@ const deployedContracts = {
               internalType: "string[]",
               name: "options",
               type: "string[]",
+            },
+            {
+              internalType: "uint256",
+              name: "endTime",
+              type: "uint256",
             },
           ],
           name: "createPoll",

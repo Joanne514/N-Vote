@@ -5,6 +5,9 @@ import { useFhevm } from "@fhevm-sdk";
 import { useAccount } from "wagmi";
 import { RainbowKitCustomConnectButton } from "~~/components/helper/RainbowKitCustomConnectButton";
 import { useVotingWagmi } from "~~/hooks/voting/useVotingWagmi";
+import { AnimatedCard } from "~~/components/animations/AnimatedCard";
+import { FadeIn } from "~~/components/animations/FadeIn";
+import { PulseRing } from "~~/components/animations/PulseRing";
 
 export const VotingApp = () => {
   const { isConnected, chain } = useAccount();
@@ -26,27 +29,52 @@ export const VotingApp = () => {
   const [showCreatePoll, setShowCreatePoll] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [allowedDecryptionOptions, setAllowedDecryptionOptions] = useState<Set<number>>(new Set());
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 flex items-center justify-center p-6">
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-8 max-w-md w-full text-center border border-white/20">
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 gradient-animated flex items-center justify-center p-6 relative overflow-hidden">
+        {/* 背景装饰元素 */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: "2s" }}></div>
+          <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: "4s" }}></div>
+        </div>
+        
+        <AnimatedCard className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 md:p-12 max-w-md w-full text-center border border-white/30 relative z-10">
+          <FadeIn delay={200}>
           <div className="mb-6">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white text-4xl mb-4 shadow-lg">
+              <PulseRing size="lg">
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 text-white text-5xl shadow-2xl transform transition-transform duration-300 hover:scale-110">
               🔒
+                </div>
+              </PulseRing>
             </div>
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Wallet Not Connected</h2>
-          <p className="text-gray-600 mb-8 leading-relaxed">
-            Connect your wallet to participate in anonymous voting and protect your privacy.
+          </FadeIn>
+          
+          <FadeIn delay={400}>
+            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 bg-clip-text text-transparent mb-4">
+              Wallet Not Connected
+            </h2>
+            <p className="text-gray-600 mb-8 leading-relaxed text-lg">
+              Connect your wallet to participate in anonymous voting and protect your privacy with fully homomorphic encryption.
           </p>
-          <div className="flex justify-center mb-4">
+          </FadeIn>
+          
+          <FadeIn delay={600}>
+            <div className="flex justify-center mb-6">
+              <div className="transform transition-all duration-300 hover:scale-105">
             <RainbowKitCustomConnectButton />
           </div>
-          <div className="text-sm text-gray-500 mt-4">
-            <p>💡 <strong>Tip:</strong> Make sure Hardhat node is running on http://127.0.0.1:8545</p>
           </div>
+            <div className="text-sm text-gray-500 bg-gray-50 rounded-xl p-4 border border-gray-200">
+              <p className="flex items-center justify-center gap-2">
+                <span className="text-lg">💡</span>
+                <span><strong>Tip:</strong> Make sure Hardhat node is running on http://127.0.0.1:8545</span>
+              </p>
         </div>
+          </FadeIn>
+        </AnimatedCard>
       </div>
     );
   }
@@ -76,7 +104,9 @@ export const VotingApp = () => {
       return;
     }
     try {
-      await voting.createPoll(pollTitle, pollDescription, options);
+      // Calculate endTime: 7 days from now (in seconds)
+      const endTime = Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60);
+      await voting.createPoll(pollTitle, pollDescription, options, endTime);
       // Wait a bit for the UI to update
       await new Promise(resolve => setTimeout(resolve, 3000));
       setPollTitle("");
@@ -119,61 +149,109 @@ export const VotingApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+      {/* 背景装饰 */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float"></div>
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style={{ animationDelay: "2s" }}></div>
+        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style={{ animationDelay: "4s" }}></div>
+      </div>
+
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 text-white shadow-xl -mt-16 pt-24 pb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 text-white shadow-2xl -mt-16 pt-28 pb-20 md:pt-32 md:pb-24 overflow-hidden">
+        {/* 背景动画效果 */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <FadeIn>
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm mb-4">
-              <span className="text-3xl">🗳️</span>
+              {/* 投票箱 Icon with 呼吸动画 + radial glow */}
+              <div className="mb-8 flex justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full animate-radial-glow"></div>
+                  <div className="relative inline-flex items-center justify-center w-28 h-28 md:w-32 md:h-32 rounded-full bg-white/10 backdrop-blur-md animate-breathe">
+                    <span className="text-6xl md:text-7xl">🗳️</span>
+                  </div>
+                </div>
             </div>
-            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+              
+              {/* 主标题 - 更大更有重量感 */}
+              <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-6 bg-gradient-to-r from-white via-blue-50 to-purple-50 bg-clip-text text-transparent tracking-tight leading-tight">
               Anonymous Voting System
             </h1>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Cast your vote privately with fully homomorphic encryption. Your choices remain confidential until decryption.
+              
+              {/* 副标题 - 更轻、透明度更低、行距更舒展 */}
+              <p className="text-lg md:text-xl lg:text-xl text-blue-100/80 max-w-2xl mx-auto leading-relaxed font-light tracking-wide">
+                Cast your vote privately with fully homomorphic encryption.<br className="hidden md:block" />
+                <span className="text-blue-200/70"> Your choices remain confidential until decryption.</span>
             </p>
           </div>
+          </FadeIn>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-6 relative z-10">
         {/* Create Poll Section */}
-        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 hover:shadow-2xl transition-all duration-300">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">✨</span>
-              <h2 className="text-2xl font-bold text-gray-900">Create New Poll</h2>
+        <AnimatedCard delay={200} hover={true} className="bg-white rounded-card shadow-medium border border-gray-100/50 p-6 md:p-8 hover:shadow-medium hover:-translate-y-1 transition-all duration-300">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-2xl shadow-lg transform transition-transform duration-300 hover:scale-110 hover:rotate-12">
+                ✨
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Create New Poll
+                </h2>
+                <p className="text-xs text-gray-500 mt-0.5">Start a new anonymous voting session</p>
+              </div>
             </div>
             <button
-              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+              className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-card shadow-medium hover:shadow-deep transition-all duration-200 btn-click relative overflow-hidden group"
               onClick={() => setShowCreatePoll(!showCreatePoll)}
             >
-              {showCreatePoll ? "❌ Cancel" : "➕ Create Poll"}
+              <span className="relative z-10 flex items-center gap-2">
+                {showCreatePoll ? (
+                  <>
+                    <span>❌</span>
+                    <span>Cancel</span>
+                  </>
+                ) : (
+                  <>
+                    <span>➕</span>
+                    <span>Create Poll</span>
+                  </>
+                )}
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
           </div>
 
           {showCreatePoll && (
-            <div className="space-y-6 mt-6 pt-6 border-t border-gray-200">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <FadeIn>
+              <div className="space-y-6 mt-6 pt-6 border-t border-gray-200 animate-slide-up">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <span className="text-purple-600">📝</span>
                   Poll Title
                 </label>
                 <input
                   type="text"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-300 bg-white/50 backdrop-blur-sm hover:border-purple-300"
                   placeholder="e.g., Best Framework for 2024"
                   value={pollTitle}
                   onChange={(e) => setPollTitle(e.target.value)}
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <span className="text-blue-600">📄</span>
                   Description (Optional)
                 </label>
                 <textarea
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all resize-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-300 resize-none bg-white/50 backdrop-blur-sm hover:border-purple-300"
                   placeholder="Describe your poll..."
                   value={pollDescription}
                   onChange={(e) => setPollDescription(e.target.value)}
@@ -181,29 +259,21 @@ export const VotingApp = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                  <span className="text-indigo-600">🎯</span>
                   Voting Options
                 </label>
                 <div className="space-y-3">
                   {optionInputs.map((option, index) => (
-                    <div key={index} className="flex gap-3 items-center">
+                    <AnimatedCard key={index} delay={index * 50} className="flex gap-3 items-center p-2">
                       <div className="flex items-center gap-3 flex-1">
-                        <span className="text-2xl flex-shrink-0 w-8 text-center">
-                          {index === 0 && "1️⃣"}
-                          {index === 1 && "2️⃣"}
-                          {index === 2 && "3️⃣"}
-                          {index === 3 && "4️⃣"}
-                          {index === 4 && "5️⃣"}
-                          {index === 5 && "6️⃣"}
-                          {index === 6 && "7️⃣"}
-                          {index === 7 && "8️⃣"}
-                          {index === 8 && "9️⃣"}
-                          {index === 9 && "🔟"}
-                        </span>
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold shadow-md">
+                          {index + 1}
+                        </div>
                         <input
                           type="text"
-                          className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
+                          className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-300 bg-white/50 backdrop-blur-sm hover:border-purple-300"
                           placeholder={`Option ${index + 1}`}
                           value={option}
                           onChange={(e) => updateOption(index, e.target.value)}
@@ -211,162 +281,218 @@ export const VotingApp = () => {
                       </div>
                       {optionInputs.length > 2 && (
                         <button
-                          className="px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors flex-shrink-0"
+                          className="px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 flex-shrink-0 shadow-md hover:shadow-lg transform hover:scale-105"
                           onClick={() => removeOption(index)}
                           type="button"
                         >
                           🗑️
                         </button>
                       )}
-                    </div>
+                    </AnimatedCard>
                   ))}
                 </div>
                 {optionInputs.length < 10 && (
                   <button
-                    className="mt-3 px-4 py-2 text-purple-600 border-2 border-purple-300 rounded-xl hover:bg-purple-50 transition-colors font-medium"
+                    className="mt-4 px-5 py-2.5 text-purple-600 border-2 border-purple-300 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 transition-all duration-300 font-medium shadow-sm hover:shadow-md transform hover:scale-105 flex items-center gap-2"
                     onClick={addOption}
                     type="button"
                   >
-                    ➕ Add Option
+                    <span>➕</span>
+                    <span>Add Option</span>
                   </button>
                 )}
               </div>
 
               <button
-                className="w-full px-6 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-6 py-4 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white font-semibold rounded-card-lg shadow-deep hover:shadow-colored-glow transition-all duration-200 btn-click disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
                 onClick={handleCreatePoll}
                 disabled={voting.isProcessing}
               >
-                {voting.isProcessing ? "⏳ Creating..." : "🚀 Create Poll"}
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  {voting.isProcessing ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>Creating Poll...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="transform group-hover:rotate-12 transition-transform duration-300">🚀</span>
+                      <span>Create Poll</span>
+                    </>
+                  )}
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-blue-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
               
               {voting.message && (
-                <div className={`mt-4 p-4 rounded-lg ${
+                <FadeIn>
+                  <div className={`mt-4 p-4 rounded-xl border-2 animate-scale-in ${
                   voting.message.includes("successfully") || voting.message.includes("success")
-                    ? "bg-green-100 text-green-800 border border-green-300"
+                      ? "bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 border-green-300 shadow-lg"
                     : voting.message.includes("error") || voting.message.includes("Error") || voting.message.includes("Failed")
-                    ? "bg-red-100 text-red-800 border border-red-300"
-                    : "bg-blue-100 text-blue-800 border border-blue-300"
+                      ? "bg-gradient-to-r from-red-50 to-rose-50 text-red-800 border-red-300 shadow-lg"
+                      : "bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-800 border-blue-300 shadow-lg"
                 }`}>
-                  <div className="flex items-center gap-2">
-                    <span>{voting.message.includes("successfully") || voting.message.includes("success") ? "✅" : "ℹ️"}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{voting.message.includes("successfully") || voting.message.includes("success") ? "✅" : "ℹ️"}</span>
                     <span className="font-medium">{voting.message}</span>
                   </div>
                 </div>
+                </FadeIn>
               )}
             </div>
+            </FadeIn>
           )}
-        </div>
+        </AnimatedCard>
 
         {/* Polls List */}
-        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">📋</span>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Active Polls ({voting.pollCount})
+        <AnimatedCard delay={400} className="bg-white rounded-card shadow-medium border border-gray-100/50 p-6 md:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-2xl shadow-lg">
+                📋
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Active Polls
               </h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {voting.pollCount} {voting.pollCount === 1 ? "poll" : "polls"} available
+                </p>
+              </div>
             </div>
             <button
-              className="px-4 py-2 text-sm bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors font-medium"
+              className="px-5 py-2.5 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-xl hover:from-purple-200 hover:to-blue-200 transition-all duration-300 font-medium shadow-sm hover:shadow-md transform hover:scale-105 flex items-center gap-2"
               onClick={async () => {
                 await voting.refreshContractData();
               }}
             >
-              🔄 Refresh
+              <span className="animate-spin-slow">🔄</span>
+              <span>Refresh</span>
             </button>
           </div>
           {voting.pollCount === 0 ? (
-            <div className="text-center py-16 text-gray-500">
-              <div className="text-6xl mb-4">📭</div>
-              <p className="text-lg">No polls available. Create one above!</p>
+            <FadeIn>
+              <div className="text-center py-16 md:py-20">
+                <div className="text-7xl md:text-8xl mb-6 animate-float">📭</div>
+                <p className="text-lg md:text-xl text-gray-500 font-medium">No polls available. Create one above!</p>
             </div>
+            </FadeIn>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {Array.from({ length: voting.pollCount }).map((_, pollId) => (
-                <div
+                <AnimatedCard
                   key={pollId}
-                  className="bg-gradient-to-br from-white to-purple-50 border-2 border-purple-200 rounded-xl p-6 hover:shadow-xl hover:border-purple-400 transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                  delay={pollId * 100}
+                  hover={true}
+                  className="bg-white border border-gray-200 rounded-card shadow-soft p-6 cursor-pointer relative overflow-hidden group hover:shadow-medium hover:-translate-y-1 transition-all duration-300 btn-click"
                   onClick={() => handleSelectPoll(pollId)}
                 >
+                  <div className="relative z-10">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">📊</span>
-                        <h3 className="font-bold text-gray-900">Poll #{pollId}</h3>
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold">
+                            {pollId + 1}
+                          </div>
+                          <h3 className="font-semibold text-gray-900">Poll #{pollId}</h3>
+                        </div>
+                        <p className="text-xs text-gray-500 ml-11">Click to view and vote</p>
                       </div>
-                      <p className="text-sm text-gray-600">Click to view and vote</p>
                     </div>
                     <button
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                      className="w-full px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-all duration-200 text-sm font-medium btn-click flex items-center justify-center gap-2 border border-gray-200"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleSelectPoll(pollId);
                       }}
                     >
-                      View →
+                      <span>View</span>
+                      <span className="text-xs">→</span>
                     </button>
                   </div>
-                </div>
+                </AnimatedCard>
               ))}
             </div>
           )}
-        </div>
+        </AnimatedCard>
 
         {/* Selected Poll Details */}
         {voting.selectedPollId !== undefined && voting.pollInfo && (
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6">
-            <div className="flex justify-between items-start mb-6">
+          <AnimatedCard delay={600} className="bg-white rounded-card shadow-medium border border-gray-100/50 p-6 md:p-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-6 border-b border-gray-200">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-3xl">📝</span>
-                  <h2 className="text-3xl font-bold text-gray-900">{voting.pollInfo.title}</h2>
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-3xl shadow-lg">
+                    📝
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                    {voting.pollInfo.title}
+                  </h2>
                 </div>
                 {voting.pollInfo.description && (
-                  <p className="text-gray-600 mt-2 ml-11">{voting.pollInfo.description}</p>
+                  <p className="text-gray-600 mt-2 ml-16 md:ml-20 text-lg leading-relaxed">{voting.pollInfo.description}</p>
                 )}
               </div>
               <button
-                className="px-4 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-300 transform hover:scale-110 hover:rotate-90 shadow-sm hover:shadow-md"
                 onClick={() => voting.setSelectedPollId(undefined)}
               >
-                ✕
+                <span className="text-2xl">✕</span>
               </button>
             </div>
 
-            <div className="border-t border-gray-200 pt-6 mt-6">
+            <div className="space-y-6">
               {/* Error/Success Messages */}
               {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <span className="text-red-500">⚠️</span>
-                    <span className="text-red-800 text-sm">{error}</span>
+                <FadeIn>
+                  <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-300 rounded-xl shadow-lg animate-scale-in">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">⚠️</span>
+                      <span className="text-red-800 font-medium">{error}</span>
+                    </div>
                   </div>
-                </div>
+                </FadeIn>
               )}
 
               {success && (
-                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-500">✅</span>
-                    <span className="text-green-800 text-sm">{success}</span>
+                <FadeIn>
+                  <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl shadow-lg animate-scale-in">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">✅</span>
+                      <span className="text-green-800 font-medium">{success}</span>
+                    </div>
                   </div>
-                </div>
+                </FadeIn>
               )}
 
               {/* Voting Section */}
               {voting.userHasVoted ? (
-                <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">✅</span>
-                    <span className="text-green-800 font-medium">You have already voted in this poll.</span>
+                <FadeIn>
+                  <div className="bg-gradient-to-r from-green-50/80 to-emerald-50/80 border border-green-200 rounded-card p-6 shadow-soft">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xl flex-shrink-0">
+                        ✅
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-green-800 font-semibold mb-2">Vote Cast Successfully</div>
+                        <div className="text-sm text-green-700/70 font-mono-crypto">
+                          Your vote is encrypted and recorded on-chain.
+                        </div>
+                        <div className="mt-2 text-xs text-green-600/60 font-mono-crypto">
+                          Status: Encrypted • Awaiting threshold decryption
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </FadeIn>
               ) : (
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span>🎯</span>
-                    Cast Your Vote
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-xl shadow-md">
+                      🎯
+                    </div>
+                    <span>Cast Your Vote</span>
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Array.from({ length: voting.pollInfo.optionCount }).map((_, index) => {
@@ -374,20 +500,16 @@ export const VotingApp = () => {
                       return (
                         <button
                           key={index}
-                          className="p-6 bg-gradient-to-br from-white to-blue-50 border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all duration-300 text-left transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-5 bg-white border border-gray-200 rounded-card shadow-soft text-left relative overflow-hidden group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-medium hover:-translate-y-0.5 transition-all duration-200 btn-click w-full"
                           onClick={() => handleVote(index)}
                           disabled={voting.isProcessing}
                         >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">
-                              {index === 0 && "1️⃣"}
-                              {index === 1 && "2️⃣"}
-                              {index === 2 && "3️⃣"}
-                              {index === 3 && "4️⃣"}
-                              {index === 4 && "5️⃣"}
-                              {index >= 5 && "⚪"}
-                            </span>
-                            <span className="font-semibold text-gray-900">{optionDesc}</span>
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-700 font-bold text-sm group-hover:bg-gray-200 transition-colors">
+                              {index + 1}
+                            </div>
+                            <span className="font-medium text-gray-900 flex-1">{optionDesc}</span>
+                            <span className="text-gray-400 group-hover:text-gray-600 transition-colors">→</span>
                           </div>
                         </button>
                       );
@@ -397,71 +519,104 @@ export const VotingApp = () => {
               )}
 
               {/* Poll Statistics */}
-              <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 mb-6 border border-purple-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <span>📊</span>
-                  Poll Statistics
+              <div className="bg-white rounded-card shadow-soft border border-gray-100 p-6 md:p-8 relative overflow-hidden">
+                {/* 渐变竖线 accent */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 via-blue-500 to-indigo-500"></div>
+                
+                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-3 ml-4">
+                  <span className="text-lg">📊</span>
+                  <span>Poll Statistics</span>
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white rounded-lg p-4 text-center border border-purple-200">
+                  <div className="bg-gray-50 rounded-card p-5 text-center border border-gray-100">
                     <div className="text-2xl mb-2">👥</div>
-                    <div className="text-3xl font-bold text-purple-600">{voting.pollInfo.totalVotes}</div>
-                    <div className="text-sm text-gray-600 mt-1">Total Votes</div>
+                    <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-1 animate-count-up font-mono-crypto">
+                      {voting.pollInfo.totalVotes}
+                    </div>
+                    <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Votes</div>
                   </div>
-                  <div className="bg-white rounded-lg p-4 text-center border border-blue-200">
+                  <div className="bg-gray-50 rounded-card p-5 text-center border border-gray-100">
                     <div className="text-2xl mb-2">📝</div>
-                    <div className="text-3xl font-bold text-blue-600">{voting.pollInfo.optionCount}</div>
-                    <div className="text-sm text-gray-600 mt-1">Options</div>
+                    <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-1 font-mono-crypto">
+                      {voting.pollInfo.optionCount}
+                    </div>
+                    <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Options</div>
                   </div>
-                  <div className="bg-white rounded-lg p-4 text-center border border-green-200">
-                    <div className="text-2xl mb-2">{voting.pollInfo.active ? "✅" : "🔒"}</div>
-                    <div className="text-3xl font-bold text-green-600">{voting.pollInfo.active ? "Active" : "Closed"}</div>
-                    <div className="text-sm text-gray-600 mt-1">Status</div>
+                  <div className="bg-gray-50 rounded-card p-5 text-center border border-gray-100">
+                    <div className="text-2xl mb-2">
+                      {voting.pollInfo.active ? "✅" : "🔒"}
+                    </div>
+                    <div className={`text-lg md:text-xl font-bold mb-1 ${
+                      voting.pollInfo.active 
+                        ? "text-green-600"
+                        : "text-gray-600"
+                    }`}>
+                      {voting.pollInfo.active ? "Live · Votes are encrypted" : "Closed"}
+                    </div>
+                    <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Status</div>
                   </div>
                 </div>
               </div>
 
-              {/* Encrypted Vote Counts */}
+              {/* Homomorphically Encrypted Tally */}
               {Object.keys(voting.encryptedCounts).length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span>🔐</span>
-                    Encrypted Vote Counts
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span className="text-lg">🔐</span>
+                    <span>Homomorphically Encrypted Tally</span>
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {Array.from({ length: voting.pollInfo.optionCount }).map((_, index) => {
                       const handle = voting.encryptedCounts[index];
                       const decrypted = voting.decryptedCounts[index];
                       const optionDesc = voting.optionDescriptions[index] || `Option ${index + 1}`;
+                      const isEncrypted = handle && handle !== "0x0000000000000000000000000000000000000000000000000000000000000000" && decrypted === undefined;
+                      const isDecrypted = decrypted !== undefined;
+                      
                       return (
-                        <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
-                          <div className="flex items-center gap-3">
-                            <span className="text-xl">
-                              {index === 0 && "1️⃣"}
-                              {index === 1 && "2️⃣"}
-                              {index === 2 && "3️⃣"}
-                              {index === 3 && "4️⃣"}
-                              {index === 4 && "5️⃣"}
-                              {index >= 5 && "⚪"}
-                            </span>
+                        <div
+                          key={index}
+                          className={`flex items-center justify-between p-4 bg-white rounded-card border transition-all duration-300 ${
+                            isDecrypted 
+                              ? "border-green-200 bg-green-50/30 shadow-soft" 
+                              : isEncrypted
+                              ? "border-gray-200 shadow-soft"
+                              : "border-gray-100"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
+                              isDecrypted 
+                                ? "bg-green-500 text-white" 
+                                : "bg-gray-200 text-gray-600"
+                            }`}>
+                              {index + 1}
+                            </div>
                             <span className="font-medium text-gray-900">{optionDesc}</span>
                           </div>
                           <div className="flex items-center gap-3">
                             {handle && handle !== "0x0000000000000000000000000000000000000000000000000000000000000000" ? (
                               <>
-                                {decrypted !== undefined ? (
-                                  <span className="px-4 py-2 bg-green-100 text-green-800 rounded-lg font-bold">
-                                    {decrypted.toString()} votes ✅
+                                {isDecrypted ? (
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-green-100 border border-green-300 rounded-lg">
+                                    <span className="font-mono-crypto font-bold text-green-800 text-lg animate-count-up">
+                                      {decrypted.toString()}
                                   </span>
+                                    <span className="text-xs text-green-700 font-medium">votes</span>
+                                    <span className="text-green-600">✓</span>
+                                  </div>
                                 ) : (
-                                  <span className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg font-medium">
-                                    🔒 Encrypted
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg">
+                                    <span className="font-mono-crypto text-gray-500 encrypted-blur">
+                                      {handle.slice(0, 8)}...{handle.slice(-6)}
                                   </span>
+                                    <span className="text-xs text-gray-500">🔒</span>
+                                  </div>
                                 )}
                               </>
                             ) : (
-                              <span className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg">
-                                0 votes
+                              <span className="px-4 py-2 bg-gray-50 text-gray-400 rounded-lg font-mono-crypto text-sm">
+                                0
                               </span>
                             )}
                           </div>
@@ -472,26 +627,59 @@ export const VotingApp = () => {
                 </div>
               )}
 
-              {/* Admin Controls */}
-              {voting.isAdmin && (
-                <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <span>⚙️</span>
-                    Admin Controls
-                  </h3>
-                  <div className="flex flex-wrap gap-3">
-                    {Array.from({ length: voting.pollInfo.optionCount }).map((_, index) => (
+              {/* Threshold Decryption Controls */}
+              {Object.keys(voting.encryptedCounts).length > 0 && (
+                <div className="bg-gradient-to-br from-amber-50/50 to-orange-50/30 border border-amber-200 rounded-card-xl shadow-colored-glow p-6 md:p-8 relative overflow-hidden">
+                  {/* Subtle pattern background */}
+                  <div className="absolute inset-0 opacity-5 pointer-events-none" style={{
+                    backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 20px)`
+                  }}></div>
+                  
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center text-white shadow-md">
+                        🔐
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-semibold text-gray-900">Public Decryption Controls</h3>
+                        <p className="text-xs text-gray-600 mt-1 font-mono-crypto">Anyone can decrypt • Multi-party decryption</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap gap-2">
+                        {Array.from({ length: voting.pollInfo.optionCount }).map((_, index) => {
+                          // 这里需要检查是否已允许解密，暂时用简单逻辑
+                          const isAllowed = false; // 需要从 voting hook 获取实际状态
+                          return (
                       <button
                         key={index}
-                        className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium"
+                              className={`px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium btn-click flex items-center gap-2 ${
+                                isAllowed
+                                  ? "bg-green-100 text-green-800 border border-green-300"
+                                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                              }`}
                         onClick={() => voting.allowAdminToDecrypt(voting.selectedPollId!, index)}
                         disabled={voting.isProcessing}
                       >
-                        🔓 Allow Decrypt Option {index + 1}
+                              {isAllowed ? (
+                                <>
+                                  <span>✓</span>
+                                  <span>Option {index + 1}</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>🔒</span>
+                                  <span>Allow Decrypt Option {index + 1}</span>
+                                </>
+                              )}
                       </button>
-                    ))}
+                          );
+                        })}
+                      </div>
+                      
                     <button
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                        className="w-full px-6 py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white rounded-card-lg hover:shadow-colored-glow transition-all duration-300 font-semibold shadow-deep btn-click disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                       onClick={async () => {
                         if (!voting.canDecrypt) {
                           voting.setMessage("⚠️ Please allow decryption for at least one option first");
@@ -499,7 +687,6 @@ export const VotingApp = () => {
                         }
                         try {
                           await voting.decrypt();
-                          // Refresh encrypted counts after decryption
                           setTimeout(() => {
                             voting.loadEncryptedCounts();
                           }, 1000);
@@ -510,8 +697,19 @@ export const VotingApp = () => {
                       }}
                       disabled={!voting.canDecrypt || voting.isDecrypting}
                     >
-                      {voting.isDecrypting ? "⏳ Decrypting..." : "🔓 Decrypt Results"}
+                        {voting.isDecrypting ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            <span>Decrypting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>🔓</span>
+                            <span>Decrypt Results</span>
+                          </>
+                        )}
                     </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -529,7 +727,7 @@ export const VotingApp = () => {
                 </div>
               )}
             </div>
-          </div>
+          </AnimatedCard>
         )}
       </div>
     </div>

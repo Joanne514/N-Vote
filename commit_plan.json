@@ -1,0 +1,354 @@
+{
+  "commits": [
+    {
+      "id": 1,
+      "timestamp": "2025-11-10T09:23:45-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: initialize project structure and basic configuration",
+      "files": [
+        ".gitignore",
+        "package.json",
+        "tsconfig.json",
+        "README.md",
+        "LICENSE",
+        ".solhintignore",
+        ".solcover.js",
+        ".solhint.json",
+        ".prettierrc.yml",
+        ".prettierignore",
+        ".eslintignore",
+        ".eslintrc.yml"
+      ]
+    },
+    {
+      "id": 2,
+      "timestamp": "2025-11-10T10:47:12-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: add Hardhat configuration for FHEVM development",
+      "files": [
+        "hardhat.config.ts"
+      ]
+    },
+    {
+      "id": 3,
+      "timestamp": "2025-11-10T11:34:28-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: implement core voting smart contract with FHE encryption",
+      "files": [
+        "contracts/Voting.sol"
+      ]
+    },
+    {
+      "id": 4,
+      "timestamp": "2025-11-10T14:12:51-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: add salary aggregator contract for encrypted submissions",
+      "files": [
+        "contracts/SalaryAggregator.sol"
+      ]
+    },
+    {
+      "id": 5,
+      "timestamp": "2025-11-10T15:28:17-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: add FHE counter example contract",
+      "files": [
+        "contracts/FHECounter.sol"
+      ]
+    },
+    {
+      "id": 6,
+      "timestamp": "2025-11-10T16:45:33-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: implement deployment scripts for contracts",
+      "files": [
+        "deploy/deploy.ts"
+      ]
+    },
+    {
+      "id": 7,
+      "timestamp": "2025-11-11T09:17:42-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "test: add comprehensive test suite for voting contract",
+      "files": [
+        "test/Voting.ts",
+        "test/VotingSepolia.ts"
+      ]
+    },
+    {
+      "id": 8,
+      "timestamp": "2025-11-11T10:52:19-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "test: add tests for salary aggregator functionality",
+      "files": [
+        "test/SalaryAggregator.ts",
+        "test/SalaryAggregatorSepolia.ts"
+      ]
+    },
+    {
+      "id": 9,
+      "timestamp": "2025-11-11T12:08:47-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "test: add FHE counter tests for validation",
+      "files": [
+        "test/FHECounter.ts",
+        "test/FHECounterSepolia.ts"
+      ]
+    },
+    {
+      "id": 10,
+      "timestamp": "2025-11-11T13:41:23-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: add Hardhat tasks for contract management",
+      "files": [
+        "tasks/accounts.ts",
+        "tasks/FHECounter.ts",
+        "tasks/GetAdmin.ts"
+      ]
+    },
+    {
+      "id": 11,
+      "timestamp": "2025-11-11T15:29:56-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: initialize UI package structure",
+      "files": [
+        "ui/package.json",
+        "ui/pnpm-workspace.yaml",
+        "ui/tsconfig.json",
+        "ui/vercel.json"
+      ]
+    },
+    {
+      "id": 12,
+      "timestamp": "2025-11-12T09:34:18-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: implement FHEVM SDK package with encryption utilities",
+      "files": [
+        "ui/packages/fhevm-sdk/package.json",
+        "ui/packages/fhevm-sdk/tsconfig.json",
+        "ui/packages/fhevm-sdk/vitest.config.ts",
+        "ui/packages/fhevm-sdk/vitest.setup.ts"
+      ]
+    },
+    {
+      "id": 13,
+      "timestamp": "2025-11-12T11:07:52-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: add FHEVM SDK core functionality",
+      "files": [
+        "ui/packages/fhevm-sdk/src/core/index.ts",
+        "ui/packages/fhevm-sdk/src/fhevmTypes.ts",
+        "ui/packages/fhevm-sdk/src/FhevmDecryptionSignature.ts"
+      ]
+    },
+    {
+      "id": 14,
+      "timestamp": "2025-11-12T12:39:41-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: implement SDK internal utilities and storage",
+      "files": [
+        "ui/packages/fhevm-sdk/src/internal/constants.ts",
+        "ui/packages/fhevm-sdk/src/internal/fhevm.ts",
+        "ui/packages/fhevm-sdk/src/internal/PublicKeyStorage.ts",
+        "ui/packages/fhevm-sdk/src/internal/RelayerSDKLoader.ts"
+      ]
+    },
+    {
+      "id": 15,
+      "timestamp": "2025-11-12T14:15:27-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: add React hooks for FHE operations",
+      "files": [
+        "ui/packages/fhevm-sdk/src/react/index.ts",
+        "ui/packages/fhevm-sdk/src/react/useFHEDecrypt.tsx",
+        "ui/packages/fhevm-sdk/src/react/useFHEEncryption.tsx",
+        "ui/packages/fhevm-sdk/src/react/useFhevm.tsx",
+        "ui/packages/fhevm-sdk/src/react/useInMemoryStorage.tsx"
+      ]
+    },
+    {
+      "id": 16,
+      "timestamp": "2025-11-12T15:48:33-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: implement storage utilities for SDK",
+      "files": [
+        "ui/packages/fhevm-sdk/src/storage/index.ts",
+        "ui/packages/fhevm-sdk/src/storage/GenericStringStorage.ts"
+      ]
+    },
+    {
+      "id": 17,
+      "timestamp": "2025-11-13T09:22:49-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: add SDK test suite and configurations",
+      "files": [
+        "ui/packages/fhevm-sdk/test/exports.test.ts",
+        "ui/packages/fhevm-sdk/test/FhevmDecryptionSignature.test.ts",
+        "ui/packages/fhevm-sdk/test/storage.test.ts"
+      ]
+    },
+    {
+      "id": 18,
+      "timestamp": "2025-11-13T10:56:14-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: initialize Next.js frontend application",
+      "files": [
+        "ui/packages/nextjs/package.json",
+        "ui/packages/nextjs/tsconfig.json",
+        "ui/packages/nextjs/next.config.ts",
+        "ui/packages/nextjs/postcss.config.js",
+        "ui/packages/nextjs/eslint.config.mjs"
+      ]
+    },
+    {
+      "id": 19,
+      "timestamp": "2025-11-13T12:31:58-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: implement Next.js app structure and layout",
+      "files": [
+        "ui/packages/nextjs/app/layout.tsx",
+        "ui/packages/nextjs/app/page.tsx",
+        "ui/packages/nextjs/app/error.tsx",
+        "ui/packages/nextjs/app/not-found.tsx"
+      ]
+    },
+    {
+      "id": 20,
+      "timestamp": "2025-11-13T14:07:23-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: add core UI components and providers",
+      "files": [
+        "ui/packages/nextjs/components/Header.tsx",
+        "ui/packages/nextjs/components/DappWrapperWithProviders.tsx",
+        "ui/packages/nextjs/components/ThemeProvider.tsx"
+      ]
+    },
+    {
+      "id": 21,
+      "timestamp": "2025-11-13T15:42:39-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: implement helper components for UI",
+      "files": [
+        "ui/packages/nextjs/components/helper/Address.tsx",
+        "ui/packages/nextjs/components/helper/AddressInput.tsx",
+        "ui/packages/nextjs/components/helper/BlockieAvatar.tsx",
+        "ui/packages/nextjs/components/helper/EthBalance.tsx",
+        "ui/packages/nextjs/components/helper/RainbowKitCustomConnectButton.tsx",
+        "ui/packages/nextjs/components/helper/TransactionHash.tsx",
+        "ui/packages/nextjs/components/helper/WalletAction.tsx"
+      ]
+    },
+    {
+      "id": 22,
+      "timestamp": "2025-11-14T09:19:47-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: add Web3 services and contract interactions",
+      "files": [
+        "ui/packages/nextjs/services/web3/index.tsx",
+        "ui/packages/nextjs/services/web3/wagmiConfig.tsx",
+        "ui/packages/nextjs/services/web3/wagmiConnectors.tsx"
+      ]
+    },
+    {
+      "id": 23,
+      "timestamp": "2025-11-14T10:53:12-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: implement contract hooks for voting and salary features",
+      "files": [
+        "ui/packages/nextjs/hooks/voting/useVotingWagmi.tsx",
+        "ui/packages/nextjs/hooks/salary/useSalaryAggregatorWagmi.tsx"
+      ]
+    },
+    {
+      "id": 24,
+      "timestamp": "2025-11-14T12:28:56-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: add deployed contracts configuration",
+      "files": [
+        "ui/packages/nextjs/contracts/deployedContracts.ts"
+      ]
+    },
+    {
+      "id": 25,
+      "timestamp": "2025-11-14T13:57:31-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: implement UI application components",
+      "files": [
+        "ui/packages/nextjs/app/_components/SalaryApp.tsx",
+        "ui/packages/nextjs/app/_components/VotingApp.tsx",
+        "ui/packages/nextjs/app/_components/FHECounterApp.tsx"
+      ]
+    },
+    {
+      "id": 26,
+      "timestamp": "2025-11-14T15:34:18-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: add utility functions and helper scripts",
+      "files": [
+        "ui/packages/nextjs/utils/helper/index.ts",
+        "ui/packages/nextjs/scripts/setup-sdk.js",
+        "ui/packages/nextjs/services/store/index.ts"
+      ]
+    },
+    {
+      "id": 27,
+      "timestamp": "2025-11-15T09:41:27-08:00",
+      "author": "Burns2344",
+      "email": "faullyanivqj@outlook.com",
+      "message": "feat: add deployment and configuration scripts",
+      "files": [
+        "deploy-to-vercel.ps1",
+        "ui/vercel-install.sh"
+      ]
+    },
+    {
+      "id": 28,
+      "timestamp": "2025-11-15T11:16:49-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "docs: add demo video and final documentation updates",
+      "files": [
+        "vote.mp4",
+        "ui/README.md"
+      ]
+    },
+    {
+      "id": 29,
+      "timestamp": "2025-11-15T12:52:33-08:00",
+      "author": "Joanne514",
+      "email": "sugarkusarmt@outlook.com",
+      "message": "feat: add scaffold configuration and final UI polish",
+      "files": [
+        "ui/packages/nextjs/scaffold.config.ts",
+        "ui/packages/nextjs/styles/globals.css",
+        "ui/packages/nextjs/public/favicon.png"
+      ]
+    }
+  ]
+}

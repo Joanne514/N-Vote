@@ -24,6 +24,7 @@ contract Voting is SepoliaConfig {
         mapping(uint32 => VoteOption) options;
         mapping(address => bool) hasVoted;
         uint32 totalVotes; // Plain count of total votes
+        uint256 endTime; // Poll end timestamp
     }
 
     mapping(uint256 => Poll) public polls;

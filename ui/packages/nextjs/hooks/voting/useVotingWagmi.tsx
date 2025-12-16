@@ -378,7 +378,7 @@ export const useVotingWagmi = (parameters: {
   };
 
   const createPoll = useCallback(
-    async (title: string, description: string, options: string[]) => {
+    async (title: string, description: string, options: string[], endTime: number) => {
       if (isProcessing || !hasContract || !hasSigner) {
         if (!hasContract) {
           setMessage(`Contract not found. Please deploy Voting contract to ${chainId === 11155111 ? "Sepolia" : "localhost"} first.`);
@@ -393,7 +393,7 @@ export const useVotingWagmi = (parameters: {
         setMessage(`Contract address not available. Please deploy Voting contract to ${chainId === 11155111 ? "Sepolia" : "localhost"}.`);
         return;
       }
-      
+
       setIsProcessing(true);
       setMessage("Creating poll...");
       try {
@@ -406,15 +406,26 @@ export const useVotingWagmi = (parameters: {
             return;
           }
         }
-        
-        const write = getContract("write");
-        if (!write) {
-          setMessage("Contract or signer not available");
-          setIsProcessing(false);
-          return;
+
+        // Create a minimal contract instance that bypasses FHE processing
+        // Use only the createPoll function ABI to avoid conflicts
+        const createPollAbi = (finalVotingContract as VotingInfo).abi.find(
+          (item: any) => item.type === "function" && item.name === "createPoll"
+        );
+
+        if (!createPollAbi) {
+          throw new Error("createPoll function not found in contract ABI");
         }
-        
-        const tx = await write.createPoll(title, description, options);
+
+        const contractInterface = new ethers.Interface([createPollAbi]);
+        const data = contractInterface.encodeFunctionData("createPoll", [title, description, options, BigInt(endTime)]);
+
+        // Send raw transaction to completely avoid FHE SDK interception
+        const tx = await ethersSigner.sendTransaction({
+          to: finalVotingContract.address,
+          data: data,
+          gasLimit: 500000, // Set reasonable gas limit for createPoll
+        });
         setMessage("Waiting for transaction...");
         const receipt = await tx.wait();
         
@@ -432,8 +443,9 @@ export const useVotingWagmi = (parameters: {
         // Directly read pollCount from contract to verify it was created
         let verifiedCount = 0n;
         try {
-          const read = getContract("read");
-          if (read && finalVotingContract?.address) {
+          // Use direct contract instance for reading to avoid FHEVM processing
+          const directReadContract = new ethers.Contract(finalVotingContract.address, (finalVotingContract as VotingInfo).abi, ethersReadonlyProvider);
+          if (directReadContract && finalVotingContract?.address) {
             // Check if contract exists at this address
             const code = await ethersReadonlyProvider?.getCode(finalVotingContract.address);
             if (!code || code === "0x") {
@@ -441,9 +453,9 @@ export const useVotingWagmi = (parameters: {
               setMessage(`Contract not deployed. Please deploy to ${chainId === 11155111 ? "Sepolia" : "localhost"} first.`);
               return;
             }
-            
+
             try {
-              const newPollCount = await read.pollCount();
+              const newPollCount = await directReadContract.pollCount();
               verifiedCount = BigInt(newPollCount.toString());
               console.log("New poll count from contract:", verifiedCount.toString());
             } catch (readErr: any) {
@@ -462,7 +474,7 @@ export const useVotingWagmi = (parameters: {
             return;
           }
         }
-        
+
         // Refresh poll count multiple times to ensure update
         // Note: verifiedCount might be 0n if pollCount is actually 0, so we check if we got a valid response
         // If we got a BAD_DATA error, verifiedCount will still be 0n but we shouldn't try to refresh
@@ -470,12 +482,12 @@ export const useVotingWagmi = (parameters: {
           for (let i = 0; i < 5; i++) {
             await refreshContractData();
             await new Promise(resolve => setTimeout(resolve, 800));
-            
+
             // Also check direct read again
             try {
-              const read = getContract("read");
-              if (read && finalVotingContract?.address) {
-                const currentCount = await read.pollCount();
+              const directReadContract = new ethers.Contract(finalVotingContract.address, (finalVotingContract as VotingInfo).abi, ethersReadonlyProvider);
+              if (directReadContract && finalVotingContract?.address) {
+                const currentCount = await directReadContract.pollCount();
                 const currentCountNum = BigInt(currentCount.toString());
                 console.log(`Refresh attempt ${i + 1}, pollCount:`, currentCountNum.toString());
                 if (currentCountNum >= verifiedCount) {
@@ -624,10 +636,6 @@ export const useVotingWagmi = (parameters: {
   }, [hasContract, pollInfo, selectedPollId, getContract]);
 
   const allowAdminToDecrypt = useCallback(async (pollId: number, optionIndex: number) => {
-    if (!isAdmin) {
-      setMessage("❌ Only admin can allow decryption");
-      return;
-    }
     if (isProcessing) return;
     
     // 检查参数
@@ -710,9 +718,7 @@ export const useVotingWagmi = (parameters: {
       }
       
       // 提供更友好的错误消息
-      if (errorMessage.includes("Only admin")) {
-        setMessage("❌ Only admin can authorize decryption. Please switch to admin account.");
-      } else if (errorMessage.includes("Option not initialized") || errorMessage.includes("no votes")) {
+      if (errorMessage.includes("Option not initialized") || errorMessage.includes("no votes")) {
         setMessage(`❌ Option ${optionIndex + 1} has no votes yet. Please wait for users to vote first.`);
       } else if (errorMessage.includes("Invalid option")) {
         setMessage(`❌ Invalid option index. Please check the option number.`);
